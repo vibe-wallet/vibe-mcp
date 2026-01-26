@@ -41,6 +41,7 @@ Add this to your `claude_desktop_config.json` or OpenCode settings:
 - **Connectivity**: `wallet_listInstances`, `wallet_selectInstance`, `wallet_getStatus`
 - **Account**: `wallet_listAccounts`, `wallet_selectAccount`, `wallet_createAccount`, `wallet_importAccount`, `wallet_deleteAccount`
 - **Assets**: `wallet_getAddress`, `wallet_getBalance`, `wallet_getTokenBalance`, `wallet_sendTransaction`, `wallet_sendToken`, `wallet_approveToken`
+- **Solana**: `solana_getBalance`, `solana_sendTransaction`, `solana_getAirdrop`, `solana_getAddress`, `solana_signMessage`
 - **Blockchain**: `wallet_getNetwork`, `wallet_switchNetwork`, `wallet_getBlockNumber`, `wallet_getGasPrice`
 - **Advanced**: `wallet_callContract`, `wallet_estimateGas`, `wallet_signMessage`
 
