@@ -12,6 +12,52 @@ This server implements **Smart IP Pairing**. It automatically identifies and pai
 AI Agent (Claude/OpenCode) ──SSE──▶ Server (IP Pairing) ──WebSocket──▶ Extension ──RPC──▶ Blockchain
 ```
 
+## 🔄 How It Works
+
+1. **Extension connects** via WebSocket and sends its identity to the server
+2. **AI client connects** via SSE (Server-Sent Events)
+3. **Server pairs them** automatically by matching public IP addresses
+4. **Tool calls flow**: AI → SSE → Server → WebSocket → Extension → Blockchain
+
+## ⚙️ Requirements
+
+- Node.js >= 18.0.0
+
+## 🧱 Tech Stack
+
+- **Express** — HTTP server and SSE transport
+- **WebSocket (ws)** — Real-time communication with the Chrome extension
+- **@modelcontextprotocol/sdk** — MCP protocol implementation
+- **TypeScript** — Type-safe codebase
+
+## 💻 Local Development
+
+```bash
+# Install dependencies
+pnpm install
+
+# Start dev server with hot reload
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Run production build
+pnpm start
+```
+
+## 🧪 Testing
+
+```bash
+# Run all 44 E2E tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+```
+
+Tests use a **mock extension client** that simulates the Chrome extension via WebSocket. All **27 tools** are covered end-to-end. Framework: **Vitest**.
+
 ## 🌐 Cloud Deployment
 
 The server is optimized for **Fly.io** but can run on any Docker-compatible platform.
@@ -24,7 +70,9 @@ fly deploy
 
 ## 🛠️ AI Configuration
 
-Add this to your `claude_desktop_config.json` or OpenCode settings:
+### Claude Desktop
+
+Add this to your `claude_desktop_config.json`:
 
 ```json
 {
@@ -36,14 +84,61 @@ Add this to your `claude_desktop_config.json` or OpenCode settings:
 }
 ```
 
-## 📦 Available Tools
+### Claude Code (via mcp-remote)
 
-- **Connectivity**: `wallet_listInstances`, `wallet_selectInstance`, `wallet_getStatus`
-- **Account**: `wallet_listAccounts`, `wallet_selectAccount`, `wallet_createAccount`, `wallet_importAccount`, `wallet_deleteAccount`
-- **Assets**: `wallet_getAddress`, `wallet_getBalance`, `wallet_getTokenBalance`, `wallet_sendTransaction`, `wallet_sendToken`, `wallet_approveToken`
-- **Solana**: `solana_getBalance`, `solana_sendTransaction`, `solana_getAirdrop`, `solana_getAddress`, `solana_signMessage`
-- **Blockchain**: `wallet_getNetwork`, `wallet_switchNetwork`, `wallet_getBlockNumber`, `wallet_getGasPrice`
-- **Advanced**: `wallet_callContract`, `wallet_estimateGas`, `wallet_signMessage`
+Use `mcp-remote` as a stdio bridge:
+
+```json
+{
+  "mcpServers": {
+    "vibe-wallet": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://vibe-wallet-mcp.fly.dev/sse"]
+    }
+  }
+}
+```
+
+## 📦 Available Tools (27)
+
+### Connectivity (3)
+- `wallet_listInstances` — List all connected Vibe Wallet instances on your local network
+- `wallet_selectInstance` — Select which local wallet instance to use
+- `wallet_getStatus` — Check wallet connection status
+
+### Account Management (5)
+- `wallet_listAccounts` — List all accounts in the active wallet instance
+- `wallet_selectAccount` — Select which account to use
+- `wallet_createAccount` — Create a new wallet account
+- `wallet_importAccount` — Import a wallet account from private key
+- `wallet_deleteAccount` — Delete a wallet account
+
+### EVM Assets (6)
+- `wallet_getAddress` — Get current active wallet address
+- `wallet_getBalance` — Get current ETH balance
+- `wallet_getTokenBalance` — Get ERC-20 token balance
+- `wallet_sendTransaction` — Send ETH (requires approval/YOLO)
+- `wallet_sendToken` — Send ERC-20 tokens
+- `wallet_approveToken` — Approve token spender
+
+### Solana (5)
+- `solana_getAddress` — Get Solana address
+- `solana_getBalance` — Get Solana balance
+- `solana_getAirdrop` — Get Solana devnet airdrop
+- `solana_sendTransaction` — Send Solana transaction
+- `solana_signMessage` — Sign Solana message
+
+### Blockchain Info (4)
+- `wallet_getNetwork` — Get current network name
+- `wallet_switchNetwork` — Switch between supported networks
+- `wallet_getBlockNumber` — Get current block number
+- `wallet_getGasPrice` — Get current gas price
+
+### Advanced (4)
+- `wallet_callContract` — Read-only contract call
+- `wallet_estimateGas` — Estimate gas for a transaction
+- `wallet_signMessage` — Sign a message (requires approval/YOLO)
+- `wallet_getTransactionHistory` — Get recent transaction history
 
 ## 📜 License
 
